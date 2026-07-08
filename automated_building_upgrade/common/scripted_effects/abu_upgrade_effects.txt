@@ -1,0 +1,537 @@
+#####################################################################
+# Automated Building Upgrade - scripted effects
+# Upgrades existing buildings in the player's direct domain only.
+#####################################################################
+
+abu_upgrade_player_domain_buildings_effect = {
+	set_variable = {
+		name = abu_upgrades_performed
+		value = 0
+	}
+	set_variable = {
+		name = abu_starting_gold
+		value = gold
+	}
+	set_variable = {
+		name = abu_gold_spent
+		value = 0
+	}
+
+	while = {
+		limit = {
+			abu_has_affordable_upgrade_in_domain_trigger = yes
+		}
+		count = 48
+		abu_upgrade_domain_one_pass_effect = yes
+	}
+
+	if = {
+		limit = {
+			var:abu_upgrades_performed > 0
+		}
+		set_variable = {
+			name = abu_gold_spent
+			value = {
+				value = var:abu_starting_gold
+				subtract = gold
+			}
+		}
+		send_interface_message = {
+			type = event_generic_good
+			title = abu_upgrade_complete_title
+			desc = abu_upgrade_complete_desc
+			right_icon = root
+		}
+	}
+	else = {
+		send_interface_message = {
+			type = event_generic_neutral
+			title = abu_upgrade_none_title
+			desc = abu_upgrade_none_desc
+			right_icon = root
+		}
+	}
+
+	remove_variable = abu_upgrades_performed
+	remove_variable = abu_starting_gold
+	remove_variable = abu_gold_spent
+}
+
+# One pass: raise every eligible building in the player's direct domain by one tier.
+# Capital county is processed first so limited gold goes to the seat of power.
+abu_upgrade_domain_one_pass_effect = {
+	every_directly_owned_province = {
+		limit = {
+			county = root.capital_county
+			abu_province_has_upgradable_building_trigger = yes
+		}
+		abu_upgrade_province_buildings_effect = yes
+	}
+	every_directly_owned_province = {
+		limit = {
+			NOT = { county = root.capital_county }
+			abu_province_has_upgradable_building_trigger = yes
+		}
+		abu_upgrade_province_buildings_effect = yes
+	}
+}
+
+abu_upgrade_province_buildings_effect = {
+	province_owner = { save_scope_as = build_owner }
+	province_owner = { save_scope_as = holder }
+
+	abu_upgrade_main_holding_effect = yes
+
+	abu_upgrade_economic_building_effect = { BUILDING = outposts }
+	abu_upgrade_economic_building_effect = { BUILDING = logging_camps }
+	abu_upgrade_economic_building_effect = { BUILDING = peat_quarries }
+	abu_upgrade_economic_building_effect = { BUILDING = plantations }
+	abu_upgrade_economic_building_effect = { BUILDING = quarries }
+	abu_upgrade_economic_building_effect = { BUILDING = hunting_grounds }
+	abu_upgrade_economic_building_effect = { BUILDING = pastures }
+	abu_upgrade_economic_building_effect = { BUILDING = cereal_fields }
+	abu_upgrade_economic_building_effect = { BUILDING = hill_farms }
+	abu_upgrade_economic_building_effect = { BUILDING = elephant_pens }
+	abu_upgrade_economic_building_effect = { BUILDING = common_tradeport }
+	abu_upgrade_economic_building_effect = { BUILDING = hospices }
+	abu_upgrade_economic_building_effect = { BUILDING = qanats }
+	abu_upgrade_economic_building_effect = { BUILDING = murex_farm }
+	abu_upgrade_economic_building_effect = { BUILDING = orchards }
+	abu_upgrade_economic_building_effect = { BUILDING = farm_estates }
+	abu_upgrade_economic_building_effect = { BUILDING = caravanserai }
+	abu_upgrade_economic_building_effect = { BUILDING = windmills }
+	abu_upgrade_economic_building_effect = { BUILDING = watermills }
+	abu_upgrade_economic_building_effect = { BUILDING = workshops }
+	abu_upgrade_economic_building_effect = { BUILDING = waterworks }
+	abu_upgrade_economic_building_effect = { BUILDING = paddy_fields }
+	abu_upgrade_economic_building_effect = { BUILDING = wind_furnace }
+	abu_upgrade_economic_building_effect = { BUILDING = smiths }
+
+	abu_upgrade_fortification_building_effect = { BUILDING = hill_forts }
+	abu_upgrade_fortification_building_effect = { BUILDING = ramparts }
+	abu_upgrade_fortification_building_effect = { BUILDING = curtain_walls }
+	abu_upgrade_fortification_building_effect = { BUILDING = watchtowers }
+
+	abu_upgrade_recruitment_building_effect = { BUILDING = military_camps }
+	abu_upgrade_recruitment_building_effect = { BUILDING = horse_pastures }
+	abu_upgrade_recruitment_building_effect = { BUILDING = hillside_grazing }
+	abu_upgrade_recruitment_building_effect = { BUILDING = warrior_lodges }
+	abu_upgrade_recruitment_building_effect = { BUILDING = barracks }
+	abu_upgrade_recruitment_building_effect = { BUILDING = camel_farms }
+	abu_upgrade_recruitment_building_effect = { BUILDING = regimental_grounds }
+	abu_upgrade_recruitment_building_effect = { BUILDING = stables }
+}
+
+abu_upgrade_main_holding_effect = {
+	if = {
+		limit = {
+			has_holding_type = castle_holding
+			has_building = castle_01
+			NOT = { has_building_or_higher = castle_02 }
+			culture = { has_innovation = innovation_battlements }
+			prev = { gold >= main_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_2_cost }
+		add_building = castle_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = castle_holding
+			has_building = castle_02
+			NOT = { has_building_or_higher = castle_03 }
+			culture = { has_innovation = innovation_hoardings }
+			prev = { gold >= main_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_3_cost }
+		add_building = castle_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = castle_holding
+			has_building = castle_03
+			NOT = { has_building_or_higher = castle_04 }
+			culture = { has_innovation = innovation_machicolations }
+			prev = { gold >= main_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_4_cost }
+		add_building = castle_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = city_holding
+			has_building = city_01
+			NOT = { has_building_or_higher = city_02 }
+			culture = { has_innovation = innovation_city_planning }
+			prev = { gold >= main_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_2_cost }
+		add_building = city_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = city_holding
+			has_building = city_02
+			NOT = { has_building_or_higher = city_03 }
+			culture = { has_innovation = innovation_manorialism }
+			prev = { gold >= main_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_3_cost }
+		add_building = city_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = city_holding
+			has_building = city_03
+			NOT = { has_building_or_higher = city_04 }
+			culture = { has_innovation = innovation_guilds }
+			prev = { gold >= main_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_4_cost }
+		add_building = city_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = church_holding
+			has_building = temple_01
+			NOT = { has_building_or_higher = temple_02 }
+			culture = { has_innovation = innovation_city_planning }
+			prev = { gold >= main_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_2_cost }
+		add_building = temple_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = church_holding
+			has_building = temple_02
+			NOT = { has_building_or_higher = temple_03 }
+			culture = { has_innovation = innovation_manorialism }
+			prev = { gold >= main_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_3_cost }
+		add_building = temple_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = church_holding
+			has_building = temple_03
+			NOT = { has_building_or_higher = temple_04 }
+			culture = { has_innovation = innovation_guilds }
+			prev = { gold >= main_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = main_building_tier_4_cost }
+		add_building = temple_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = tribal_holding
+			has_building = tribe_01
+			NOT = { has_building_or_higher = tribe_02 }
+			prev = { gold >= tribal_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = tribal_building_tier_2_cost }
+		add_building = tribe_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = tribal_holding
+			has_building = tribe_02
+			NOT = { has_building_or_higher = tribe_03 }
+			prev = { gold >= tribal_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = tribal_building_tier_3_cost }
+		add_building = tribe_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_holding_type = tribal_holding
+			has_building = tribe_03
+			NOT = { has_building_or_higher = tribe_04 }
+			prev = { gold >= tribal_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = tribal_building_tier_4_cost }
+		add_building = tribe_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+}
+
+abu_increment_upgrade_counter_effect = {
+	prev = {
+		change_variable = {
+			name = abu_upgrades_performed
+			add = 1
+		}
+	}
+}
+
+abu_upgrade_economic_building_effect = {
+	if = {
+		limit = {
+			has_building = $BUILDING$_01
+			NOT = { has_building_or_higher = $BUILDING$_02 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_2_cost }
+		add_building = $BUILDING$_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_02
+			NOT = { has_building_or_higher = $BUILDING$_03 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_3_cost }
+		add_building = $BUILDING$_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_03
+			NOT = { has_building_or_higher = $BUILDING$_04 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_4_cost }
+		add_building = $BUILDING$_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_04
+			NOT = { has_building_or_higher = $BUILDING$_05 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_5_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_5_cost }
+		add_building = $BUILDING$_05
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_05
+			NOT = { has_building_or_higher = $BUILDING$_06 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_6_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_6_cost }
+		add_building = $BUILDING$_06
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_06
+			NOT = { has_building_or_higher = $BUILDING$_07 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_7_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_7_cost }
+		add_building = $BUILDING$_07
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_07
+			NOT = { has_building_or_higher = $BUILDING$_08 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_8_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_8_cost }
+		add_building = $BUILDING$_08
+		abu_increment_upgrade_counter_effect = yes
+	}
+}
+
+abu_upgrade_fortification_building_effect = {
+	if = {
+		limit = {
+			has_building = $BUILDING$_01
+			NOT = { has_building_or_higher = $BUILDING$_02 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_2_cost }
+		add_building = $BUILDING$_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_02
+			NOT = { has_building_or_higher = $BUILDING$_03 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_3_cost }
+		add_building = $BUILDING$_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_03
+			NOT = { has_building_or_higher = $BUILDING$_04 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_4_cost }
+		add_building = $BUILDING$_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_04
+			NOT = { has_building_or_higher = $BUILDING$_05 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_5_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_5_cost }
+		add_building = $BUILDING$_05
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_05
+			NOT = { has_building_or_higher = $BUILDING$_06 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_6_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_6_cost }
+		add_building = $BUILDING$_06
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_06
+			NOT = { has_building_or_higher = $BUILDING$_07 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_7_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_7_cost }
+		add_building = $BUILDING$_07
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_07
+			NOT = { has_building_or_higher = $BUILDING$_08 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_8_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_8_cost }
+		add_building = $BUILDING$_08
+		abu_increment_upgrade_counter_effect = yes
+	}
+}
+
+abu_upgrade_recruitment_building_effect = {
+	if = {
+		limit = {
+			has_building = $BUILDING$_01
+			NOT = { has_building_or_higher = $BUILDING$_02 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_2_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_2_cost }
+		add_building = $BUILDING$_02
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_02
+			NOT = { has_building_or_higher = $BUILDING$_03 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_3_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_3_cost }
+		add_building = $BUILDING$_03
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_03
+			NOT = { has_building_or_higher = $BUILDING$_04 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_4_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_4_cost }
+		add_building = $BUILDING$_04
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_04
+			NOT = { has_building_or_higher = $BUILDING$_05 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_5_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_5_cost }
+		add_building = $BUILDING$_05
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_05
+			NOT = { has_building_or_higher = $BUILDING$_06 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_6_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_6_cost }
+		add_building = $BUILDING$_06
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_06
+			NOT = { has_building_or_higher = $BUILDING$_07 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_7_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_7_cost }
+		add_building = $BUILDING$_07
+		abu_increment_upgrade_counter_effect = yes
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_07
+			NOT = { has_building_or_higher = $BUILDING$_08 }
+			building_$BUILDING$_requirement_terrain = yes
+			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
+			prev = { gold >= normal_building_tier_8_cost }
+		}
+		prev = { remove_short_term_gold = normal_building_tier_8_cost }
+		add_building = $BUILDING$_08
+		abu_increment_upgrade_counter_effect = yes
+	}
+}

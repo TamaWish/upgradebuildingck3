@@ -1,0 +1,16 @@
+﻿l_english:
+ abu_upgrade_domain_buildings:0 "Upgrade Domain Buildings"
+ abu_upgrade_domain_buildings_desc:0 "Order your stewards to survey your personal domain and raise every building as far as your realm can currently support.\n\nBuildings are upgraded to the highest tier your innovations and holding requirements allow, spending gold until no further upgrades are possible. Only holdings you own directly are affected — vassal lands are left untouched. Your capital county is prioritised when gold runs short.\n\n#weak Does not upgrade duchy capital buildings, special buildings, or nomadic yurt buildings. Provinces with construction already in progress are skipped.#!"
+ abu_upgrade_domain_buildings_tooltip:0 "Upgrade all eligible buildings in your personal domain to their current maximum tier"
+ abu_upgrade_domain_buildings_confirm:0 "Begin upgrades"
+
+ abu_upgrade_domain_buildings_effect_tt:0 "Every eligible building in your personal domain is raised tier by tier until it reaches the highest level you currently qualify for, or until you can no longer afford the next upgrade."
+
+ abu_no_upgradable_buildings_tt:0 "You have no buildings in your personal domain that can be upgraded right now."
+ abu_insufficient_gold_tt:0 "You do not have enough gold to pay for any available upgrade."
+
+ abu_upgrade_complete_title:0 "Buildings Upgraded"
+ abu_upgrade_complete_desc:0 "Your stewards upgraded #bold [THIS.Var('abu_upgrades_performed').GetValue|0]#! buildings across your personal domain, spending #bold [THIS.Var('abu_gold_spent').GetValue|0]#! @gold_icon! gold."
+
+ abu_upgrade_none_title:0 "No Upgrades Performed"
+ abu_upgrade_none_desc:0 "No buildings could be upgraded. You may lack gold, innovations, terrain requirements, or ongoing construction may be blocking upgrades."

@@ -1,0 +1,40 @@
+abu_upgrade_domain_buildings = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
+	}
+
+	decision_group_type = minor
+
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+		abu_has_upgradable_building_in_domain_trigger = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_upgrade_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_buildings_tt
+			abu_has_upgradable_building_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_upgrade_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_domain_buildings_effect_tt
+		abu_upgrade_player_domain_buildings_effect = yes
+	}
+
+	ai_will_do = {
+		base = 0
+	}
+}
