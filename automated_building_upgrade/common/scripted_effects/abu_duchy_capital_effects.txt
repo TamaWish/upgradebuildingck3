@@ -1,0 +1,233 @@
+# --- Duchy capital building upgrades (opt-in) ---
+
+abu_upgrade_duchy_capital_military_building_effect = {
+	if = {
+		limit = {
+			has_building = $BUILDING$_01
+			NOT = { has_building_or_higher = $BUILDING$_02 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+			culture = { has_innovation = innovation_castle_baileys }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_4_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_4_cost } }
+		add_building = $BUILDING$_02
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = $BUILDING$ }
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_02
+			NOT = { has_building_or_higher = $BUILDING$_03 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+			culture = { has_innovation = innovation_royal_armory }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_5_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_5_cost } }
+		add_building = $BUILDING$_03
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = $BUILDING$ }
+	}
+}
+
+abu_upgrade_duchy_capital_economic_building_effect = {
+	if = {
+		limit = {
+			has_building = $BUILDING$_01
+			NOT = { has_building_or_higher = $BUILDING$_02 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+			culture = { has_innovation = innovation_windmills }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_4_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_4_cost } }
+		add_building = $BUILDING$_02
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = $BUILDING$ }
+	}
+	else_if = {
+		limit = {
+			has_building = $BUILDING$_02
+			NOT = { has_building_or_higher = $BUILDING$_03 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+			culture = { has_innovation = innovation_cranes }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_5_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_5_cost } }
+		add_building = $BUILDING$_03
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = $BUILDING$ }
+	}
+}
+
+abu_upgrade_duchy_capital_special_buildings_effect = {
+	if = {
+		limit = {
+			has_building = charnel_grounds_01
+			NOT = { has_building_or_higher = charnel_grounds_02 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = charnel_grounds } }
+			faith = { has_doctrine_parameter = sky_burials_active }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_4_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_4_cost } }
+		add_building = charnel_grounds_02
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = charnel_grounds }
+	}
+	else_if = {
+		limit = {
+			has_building = charnel_grounds_02
+			NOT = { has_building_or_higher = charnel_grounds_03 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = charnel_grounds } }
+			faith = { has_doctrine_parameter = sky_burials_active }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_5_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_5_cost } }
+		add_building = charnel_grounds_03
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = charnel_grounds }
+	}
+	else_if = {
+		limit = {
+			has_building = dragon_kiln_01
+			NOT = { has_building_or_higher = dragon_kiln_02 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = dragon_kiln } }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_4_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_4_cost } }
+		add_building = dragon_kiln_02
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = dragon_kiln }
+	}
+	else_if = {
+		limit = {
+			has_building = dragon_kiln_02
+			NOT = { has_building_or_higher = dragon_kiln_03 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = dragon_kiln } }
+			culture = { has_innovation = innovation_windmills }
+			prev = { abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_5_cost } }
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_5_cost } }
+		add_building = dragon_kiln_03
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = dragon_kiln }
+	}
+	else_if = {
+		limit = {
+			has_building = examination_hall_01
+			NOT = { has_building_or_higher = examination_hall_02 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = examination_hall } }
+			prev = {
+				government_has_flag = government_has_merit
+				abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_4_cost }
+			}
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_4_cost } }
+		add_building = examination_hall_02
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = examination_hall }
+	}
+	else_if = {
+		limit = {
+			has_building = examination_hall_02
+			NOT = { has_building_or_higher = examination_hall_03 }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = examination_hall } }
+			building_requirement_castle_city_church = { LEVEL = 02 }
+			prev = {
+				government_has_flag = government_has_merit
+				abu_character_can_afford_cost_trigger = { COST = expensive_building_tier_5_cost }
+			}
+		}
+		prev = { abu_spend_upgrade_gold_effect = { COST = expensive_building_tier_5_cost } }
+		add_building = examination_hall_03
+		abu_increment_slot_upgrade_counter_effect = { BUILDING = examination_hall }
+	}
+}
+
+abu_upgrade_duchy_capital_buildings_in_province_effect = {
+	if = {
+		limit = {
+			abu_upgrade_depth_is_one_tier_trigger = yes
+		}
+		if = {
+			limit = {
+				abu_upgrade_mode_includes_military_trigger = yes
+				abu_duchy_capital_military_building_can_upgrade_trigger = yes
+			}
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = archery_ranges }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = blacksmiths }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = jousting_lists }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = march }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = military_academy }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = royal_armory }
+			abu_upgrade_duchy_capital_military_building_effect = { BUILDING = siege_works }
+		}
+		if = {
+			limit = {
+				abu_upgrade_mode_includes_economic_trigger = yes
+				abu_duchy_capital_economic_building_can_upgrade_trigger = yes
+			}
+			abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = burial_site }
+			abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = leisure_palace }
+			abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = royal_forest }
+			abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = royal_garden }
+			abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = tax_assessor }
+		}
+		if = {
+			limit = {
+				root = { var:abu_upgrade_mode = 0 }
+				abu_duchy_capital_special_building_can_upgrade_trigger = yes
+			}
+			abu_upgrade_duchy_capital_special_buildings_effect = yes
+		}
+	}
+	else = {
+		if = {
+			limit = {
+				abu_upgrade_mode_includes_military_trigger = yes
+			}
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = archery_ranges }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = blacksmiths }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = jousting_lists }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = march }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = military_academy }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = royal_armory }
+			abu_upgrade_duchy_capital_military_building_to_max_effect = { BUILDING = siege_works }
+		}
+		if = {
+			limit = {
+				abu_upgrade_mode_includes_economic_trigger = yes
+			}
+			abu_upgrade_duchy_capital_economic_building_to_max_effect = { BUILDING = burial_site }
+			abu_upgrade_duchy_capital_economic_building_to_max_effect = { BUILDING = leisure_palace }
+			abu_upgrade_duchy_capital_economic_building_to_max_effect = { BUILDING = royal_forest }
+			abu_upgrade_duchy_capital_economic_building_to_max_effect = { BUILDING = royal_garden }
+			abu_upgrade_duchy_capital_economic_building_to_max_effect = { BUILDING = tax_assessor }
+		}
+		if = {
+			limit = {
+				root = { var:abu_upgrade_mode = 0 }
+			}
+			while = {
+				limit = { abu_duchy_capital_special_building_can_upgrade_trigger = yes }
+				count = 3
+				abu_upgrade_duchy_capital_special_buildings_effect = yes
+			}
+		}
+	}
+}
+
+abu_upgrade_duchy_capital_military_building_to_max_effect = {
+	while = {
+		limit = {
+			has_building_with_flag = { flag = duchy_building }
+			has_building_or_higher = $BUILDING$_01
+			abu_duchy_capital_military_upgrade_step_trigger = { BUILDING = $BUILDING$ }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+		}
+		count = 2
+		abu_upgrade_duchy_capital_military_building_effect = { BUILDING = $BUILDING$ }
+	}
+}
+
+abu_upgrade_duchy_capital_economic_building_to_max_effect = {
+	while = {
+		limit = {
+			has_building_with_flag = { flag = duchy_building }
+			has_building_or_higher = $BUILDING$_01
+			abu_duchy_capital_economic_upgrade_step_trigger = { BUILDING = $BUILDING$ }
+			NOT = { abu_duchy_capital_building_at_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+		}
+		count = 2
+		abu_upgrade_duchy_capital_economic_building_effect = { BUILDING = $BUILDING$ }
+	}
+}

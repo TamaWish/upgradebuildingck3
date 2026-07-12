@@ -1,0 +1,156 @@
+namespace = abu
+
+# Choose how much gold to keep in reserve when running automated upgrades.
+abu_event.0001 = {
+	type = character_event
+	title = abu_gold_reserve_event_title
+	desc = abu_gold_reserve_event_desc
+	theme = stewardship
+	left_portrait = root
+
+	option = {
+		name = abu_gold_reserve_none
+		remove_variable = abu_gold_reserve
+		custom_tooltip = abu_gold_reserve_none_tt
+	}
+
+	option = {
+		name = abu_gold_reserve_100
+		set_variable = {
+			name = abu_gold_reserve
+			value = 100
+		}
+		custom_tooltip = abu_gold_reserve_set_tt
+	}
+
+	option = {
+		name = abu_gold_reserve_250
+		set_variable = {
+			name = abu_gold_reserve
+			value = 250
+		}
+		custom_tooltip = abu_gold_reserve_set_tt
+	}
+
+	option = {
+		name = abu_gold_reserve_500
+		set_variable = {
+			name = abu_gold_reserve
+			value = 500
+		}
+		custom_tooltip = abu_gold_reserve_set_tt
+	}
+
+	option = {
+		name = abu_gold_reserve_1000
+		set_variable = {
+			name = abu_gold_reserve
+			value = 1000
+		}
+		custom_tooltip = abu_gold_reserve_set_tt
+	}
+
+	option = {
+		name = abu_gold_reserve_2000
+		set_variable = {
+			name = abu_gold_reserve
+			value = 2000
+		}
+		custom_tooltip = abu_gold_reserve_set_tt
+	}
+}
+
+# Confirm or cancel an automated upgrade after the dry-run cost preview.
+abu_event.0002 = {
+	type = character_event
+	title = abu_upgrade_confirm_title
+	desc = abu_upgrade_confirm_desc
+	theme = stewardship
+	left_portrait = root
+
+	option = {
+		name = abu_upgrade_confirm_proceed
+		custom_tooltip = abu_upgrade_confirm_proceed_tt
+		hidden_effect = {
+			abu_upgrade_player_domain_buildings_effect = yes
+			remove_variable = abu_upgrade_mode
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			abu_clear_upgrade_preview_variables_effect = yes
+		}
+	}
+
+	option = {
+		name = abu_upgrade_confirm_cancel
+		custom_tooltip = abu_upgrade_confirm_cancel_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_mode
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			abu_clear_upgrade_preview_variables_effect = yes
+		}
+	}
+}
+
+# Choose the maximum building tier for tier-cap upgrades.
+abu_event.0003 = {
+	type = character_event
+	title = abu_tier_cap_event_title
+	desc = abu_tier_cap_event_desc
+	theme = stewardship
+	left_portrait = root
+
+	option = {
+		name = abu_tier_cap_2
+		set_variable = {
+			name = abu_tier_cap
+			value = 2
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+
+	option = {
+		name = abu_tier_cap_3
+		set_variable = {
+			name = abu_tier_cap
+			value = 3
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+
+	option = {
+		name = abu_tier_cap_4
+		set_variable = {
+			name = abu_tier_cap
+			value = 4
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+
+	option = {
+		name = abu_tier_cap_5
+		set_variable = {
+			name = abu_tier_cap
+			value = 5
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+
+	option = {
+		name = abu_tier_cap_6
+		set_variable = {
+			name = abu_tier_cap
+			value = 6
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+
+	option = {
+		name = abu_tier_cap_8
+		set_variable = {
+			name = abu_tier_cap
+			value = 8
+		}
+		custom_tooltip = abu_tier_cap_set_tt
+	}
+}

@@ -1,0 +1,219 @@
+# Per-province building detail for upgrade completion reports (province scope).
+abu_upgrade_province_detail = {
+	type = province
+	random_valid = no
+
+	text = {
+		localization_key = abu_upgrade_province_entry
+	}
+
+	text = {
+		trigger = { var:abu_log_main > 0 }
+		localization_key = abu_log_detail_main
+	}
+
+	text = {
+		trigger = { var:abu_log_outposts > 0 }
+		localization_key = abu_log_detail_outposts
+	}
+	text = {
+		trigger = { var:abu_log_logging_camps > 0 }
+		localization_key = abu_log_detail_logging_camps
+	}
+	text = {
+		trigger = { var:abu_log_peat_quarries > 0 }
+		localization_key = abu_log_detail_peat_quarries
+	}
+	text = {
+		trigger = { var:abu_log_plantations > 0 }
+		localization_key = abu_log_detail_plantations
+	}
+	text = {
+		trigger = { var:abu_log_quarries > 0 }
+		localization_key = abu_log_detail_quarries
+	}
+	text = {
+		trigger = { var:abu_log_hunting_grounds > 0 }
+		localization_key = abu_log_detail_hunting_grounds
+	}
+	text = {
+		trigger = { var:abu_log_pastures > 0 }
+		localization_key = abu_log_detail_pastures
+	}
+	text = {
+		trigger = { var:abu_log_cereal_fields > 0 }
+		localization_key = abu_log_detail_cereal_fields
+	}
+	text = {
+		trigger = { var:abu_log_hill_farms > 0 }
+		localization_key = abu_log_detail_hill_farms
+	}
+	text = {
+		trigger = { var:abu_log_elephant_pens > 0 }
+		localization_key = abu_log_detail_elephant_pens
+	}
+	text = {
+		trigger = { var:abu_log_common_tradeport > 0 }
+		localization_key = abu_log_detail_common_tradeport
+	}
+	text = {
+		trigger = { var:abu_log_hospices > 0 }
+		localization_key = abu_log_detail_hospices
+	}
+	text = {
+		trigger = { var:abu_log_qanats > 0 }
+		localization_key = abu_log_detail_qanats
+	}
+	text = {
+		trigger = { var:abu_log_murex_farm > 0 }
+		localization_key = abu_log_detail_murex_farm
+	}
+	text = {
+		trigger = { var:abu_log_orchards > 0 }
+		localization_key = abu_log_detail_orchards
+	}
+	text = {
+		trigger = { var:abu_log_farm_estates > 0 }
+		localization_key = abu_log_detail_farm_estates
+	}
+	text = {
+		trigger = { var:abu_log_caravanserai > 0 }
+		localization_key = abu_log_detail_caravanserai
+	}
+	text = {
+		trigger = { var:abu_log_windmills > 0 }
+		localization_key = abu_log_detail_windmills
+	}
+	text = {
+		trigger = { var:abu_log_watermills > 0 }
+		localization_key = abu_log_detail_watermills
+	}
+	text = {
+		trigger = { var:abu_log_workshops > 0 }
+		localization_key = abu_log_detail_workshops
+	}
+	text = {
+		trigger = { var:abu_log_waterworks > 0 }
+		localization_key = abu_log_detail_waterworks
+	}
+	text = {
+		trigger = { var:abu_log_paddy_fields > 0 }
+		localization_key = abu_log_detail_paddy_fields
+	}
+	text = {
+		trigger = { var:abu_log_wind_furnace > 0 }
+		localization_key = abu_log_detail_wind_furnace
+	}
+	text = {
+		trigger = { var:abu_log_smiths > 0 }
+		localization_key = abu_log_detail_smiths
+	}
+	text = {
+		trigger = { var:abu_log_hill_forts > 0 }
+		localization_key = abu_log_detail_hill_forts
+	}
+	text = {
+		trigger = { var:abu_log_ramparts > 0 }
+		localization_key = abu_log_detail_ramparts
+	}
+	text = {
+		trigger = { var:abu_log_curtain_walls > 0 }
+		localization_key = abu_log_detail_curtain_walls
+	}
+	text = {
+		trigger = { var:abu_log_watchtowers > 0 }
+		localization_key = abu_log_detail_watchtowers
+	}
+	text = {
+		trigger = { var:abu_log_military_camps > 0 }
+		localization_key = abu_log_detail_military_camps
+	}
+	text = {
+		trigger = { var:abu_log_horse_pastures > 0 }
+		localization_key = abu_log_detail_horse_pastures
+	}
+	text = {
+		trigger = { var:abu_log_hillside_grazing > 0 }
+		localization_key = abu_log_detail_hillside_grazing
+	}
+	text = {
+		trigger = { var:abu_log_warrior_lodges > 0 }
+		localization_key = abu_log_detail_warrior_lodges
+	}
+	text = {
+		trigger = { var:abu_log_barracks > 0 }
+		localization_key = abu_log_detail_barracks
+	}
+	text = {
+		trigger = { var:abu_log_camel_farms > 0 }
+		localization_key = abu_log_detail_camel_farms
+	}
+	text = {
+		trigger = { var:abu_log_regimental_grounds > 0 }
+		localization_key = abu_log_detail_regimental_grounds
+	}
+	text = {
+		trigger = { var:abu_log_stables > 0 }
+		localization_key = abu_log_detail_stables
+	}
+	text = {
+		trigger = { var:abu_log_archery_ranges > 0 }
+		localization_key = abu_log_detail_archery_ranges
+	}
+	text = {
+		trigger = { var:abu_log_blacksmiths > 0 }
+		localization_key = abu_log_detail_blacksmiths
+	}
+	text = {
+		trigger = { var:abu_log_jousting_lists > 0 }
+		localization_key = abu_log_detail_jousting_lists
+	}
+	text = {
+		trigger = { var:abu_log_march > 0 }
+		localization_key = abu_log_detail_march
+	}
+	text = {
+		trigger = { var:abu_log_military_academy > 0 }
+		localization_key = abu_log_detail_military_academy
+	}
+	text = {
+		trigger = { var:abu_log_royal_armory > 0 }
+		localization_key = abu_log_detail_royal_armory
+	}
+	text = {
+		trigger = { var:abu_log_siege_works > 0 }
+		localization_key = abu_log_detail_siege_works
+	}
+	text = {
+		trigger = { var:abu_log_burial_site > 0 }
+		localization_key = abu_log_detail_burial_site
+	}
+	text = {
+		trigger = { var:abu_log_leisure_palace > 0 }
+		localization_key = abu_log_detail_leisure_palace
+	}
+	text = {
+		trigger = { var:abu_log_royal_forest > 0 }
+		localization_key = abu_log_detail_royal_forest
+	}
+	text = {
+		trigger = { var:abu_log_royal_garden > 0 }
+		localization_key = abu_log_detail_royal_garden
+	}
+	text = {
+		trigger = { var:abu_log_tax_assessor > 0 }
+		localization_key = abu_log_detail_tax_assessor
+	}
+	text = {
+		trigger = { var:abu_log_charnel_grounds > 0 }
+		localization_key = abu_log_detail_charnel_grounds
+	}
+	text = {
+		trigger = { var:abu_log_dragon_kiln > 0 }
+		localization_key = abu_log_detail_dragon_kiln
+	}
+	text = {
+		trigger = { var:abu_log_examination_hall > 0 }
+		localization_key = abu_log_detail_examination_hall
+	}
+}

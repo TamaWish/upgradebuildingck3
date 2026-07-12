@@ -1,0 +1,63 @@
+# Passive auto-upgrade pulses: quarterly innovation check + yearly backup + era advance.
+
+quarterly_playable_pulse = {
+	on_actions = {
+		abu_passive_auto_upgrade_quarterly
+	}
+}
+
+yearly_playable_pulse = {
+	on_actions = {
+		abu_passive_auto_upgrade_yearly
+	}
+}
+
+on_culture_era_changed = {
+	on_actions = {
+		abu_passive_auto_upgrade_era
+	}
+}
+
+on_character_culture_change = {
+	on_actions = {
+		abu_passive_auto_upgrade_culture_change
+	}
+}
+
+abu_passive_auto_upgrade_quarterly = {
+	trigger = {
+		abu_passive_auto_upgrade_character_trigger = yes
+	}
+	effect = {
+		abu_passive_auto_upgrade_innovation_pulse_effect = yes
+	}
+}
+
+abu_passive_auto_upgrade_yearly = {
+	trigger = {
+		abu_passive_auto_upgrade_character_trigger = yes
+	}
+	effect = {
+		abu_passive_auto_upgrade_innovation_pulse_effect = yes
+	}
+}
+
+abu_passive_auto_upgrade_era = {
+	effect = {
+		any_player = {
+			limit = {
+				abu_passive_auto_upgrade_character_trigger = yes
+			}
+			abu_passive_auto_upgrade_era_pulse_effect = yes
+		}
+	}
+}
+
+abu_passive_auto_upgrade_culture_change = {
+	trigger = {
+		abu_passive_auto_upgrade_character_trigger = yes
+	}
+	effect = {
+		abu_update_tracked_innovation_count_effect = yes
+	}
+}

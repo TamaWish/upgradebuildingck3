@@ -1,17 +1,166 @@
-abu_upgrade_domain_buildings = {
+# Shared decision template: always visible for landed players, greyed out when unavailable.
+
+abu_set_gold_reserve = {
 	picture = {
-		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
 	}
 
-	decision_group_type = minor
-
+	decision_group_type = abu_decisions
 	ai_check_interval = 0
 
 	is_shown = {
 		is_ai = no
 		is_playable_character = yes
 		is_landed = yes
-		abu_has_upgradable_building_in_domain_trigger = yes
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = abu_set_gold_reserve_tooltip
+		hidden_effect = {
+			trigger_event = abu_event.0001
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_toggle_passive_auto_upgrade = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = abu_toggle_passive_auto_upgrade_tooltip
+		if = {
+			limit = {
+				has_variable = abu_passive_auto_upgrade
+				var:abu_passive_auto_upgrade = 1
+			}
+			remove_variable = abu_passive_auto_upgrade
+			custom_tooltip = abu_passive_auto_upgrade_disabled_tt
+		}
+		else = {
+			set_variable = {
+				name = abu_passive_auto_upgrade
+				value = 1
+			}
+			abu_update_tracked_innovation_count_effect = yes
+			custom_tooltip = abu_passive_auto_upgrade_enabled_tt
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_toggle_detailed_reports = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = abu_toggle_detailed_reports_tooltip
+		if = {
+			limit = {
+				has_variable = abu_detailed_report
+				var:abu_detailed_report = 1
+			}
+			remove_variable = abu_detailed_report
+			custom_tooltip = abu_detailed_reports_disabled_tt
+		}
+		else = {
+			set_variable = {
+				name = abu_detailed_report
+				value = 1
+			}
+			custom_tooltip = abu_detailed_reports_enabled_tt
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_toggle_include_duchy_capital_buildings = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = abu_toggle_include_duchy_capital_tooltip
+		if = {
+			limit = {
+				has_variable = abu_include_duchy_capital
+				var:abu_include_duchy_capital = 1
+			}
+			remove_variable = abu_include_duchy_capital
+			custom_tooltip = abu_include_duchy_capital_disabled_tt
+		}
+		else = {
+			set_variable = {
+				name = abu_include_duchy_capital
+				value = 1
+			}
+			custom_tooltip = abu_include_duchy_capital_enabled_tt
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_domain_all = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
 	}
 
 	is_valid = {
@@ -30,11 +179,400 @@ abu_upgrade_domain_buildings = {
 	}
 
 	effect = {
-		custom_tooltip = abu_upgrade_domain_buildings_effect_tt
-		abu_upgrade_player_domain_buildings_effect = yes
+		custom_tooltip = abu_upgrade_domain_all_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
 	}
 
-	ai_will_do = {
-		base = 0
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_domain_holdings = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
 	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_holdings_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_holdings_tt
+			abu_has_upgradable_holdings_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_holdings_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_domain_holdings_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 1 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_domain_economic = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_city.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_economic_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_economic_tt
+			abu_has_upgradable_economic_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_economic_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_domain_economic_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 2 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_domain_military = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_military.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_military_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_military_tt
+			abu_has_upgradable_military_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_military_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_domain_military_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 3 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_capital_county = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_upgrade_in_capital_county_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_capital_county_tt
+			any_directly_owned_province = {
+				abu_province_in_capital_county_trigger = yes
+				abu_province_has_upgradable_building_trigger = yes
+			}
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_upgrade_in_capital_county_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_capital_county_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			set_variable = { name = abu_upgrade_scope value = 1 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_current_duchy = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_realm.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_upgrade_in_current_duchy_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_current_duchy_tt
+			any_directly_owned_province = {
+				abu_province_in_current_duchy_trigger = yes
+				abu_province_has_upgradable_building_trigger = yes
+			}
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_upgrade_in_current_duchy_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_current_duchy_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_depth
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			set_variable = { name = abu_upgrade_scope value = 2 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_fill_empty_slots = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_city.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_empty_slot_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_empty_slots_tt
+			any_directly_owned_province = {
+				NOT = { has_ongoing_construction = yes }
+				has_free_building_slot = yes
+				OR = {
+					abu_economic_slot_building_can_construct_trigger = yes
+					abu_military_slot_building_can_construct_trigger = yes
+				}
+			}
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_empty_slot_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_fill_empty_slots_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			set_variable = { name = abu_upgrade_depth value = 2 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_one_tier = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_upgrade_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_buildings_tt
+			abu_has_upgradable_building_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_upgrade_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_one_tier_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			set_variable = { name = abu_upgrade_depth value = 1 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_set_tier_cap = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		always = yes
+	}
+
+	effect = {
+		custom_tooltip = abu_set_tier_cap_tooltip
+		hidden_effect = {
+			trigger_event = abu_event.0003
+		}
+	}
+
+	ai_will_do = { base = 0 }
+}
+
+abu_upgrade_to_tier_cap = {
+	picture = {
+		reference = "gfx/interface/illustrations/decisions/decision_spend_money.dds"
+	}
+
+	decision_group_type = abu_decisions
+	ai_check_interval = 0
+
+	is_shown = {
+		is_ai = no
+		is_playable_character = yes
+		is_landed = yes
+	}
+
+	is_valid = {
+		abu_has_affordable_tier_cap_upgrade_in_domain_trigger = yes
+	}
+
+	is_valid_showing_failures_only = {
+		custom_tooltip = {
+			text = abu_no_upgradable_buildings_tt
+			abu_has_upgradable_building_in_domain_trigger = yes
+		}
+		custom_tooltip = {
+			text = abu_insufficient_gold_tt
+			abu_has_affordable_tier_cap_upgrade_in_domain_trigger = yes
+		}
+	}
+
+	effect = {
+		custom_tooltip = abu_upgrade_to_tier_cap_effect_tt
+		hidden_effect = {
+			remove_variable = abu_upgrade_scope
+			if = {
+				limit = {
+					NOT = { has_variable = abu_tier_cap }
+				}
+				set_variable = {
+					name = abu_tier_cap
+					value = 4
+				}
+			}
+			set_variable = { name = abu_upgrade_mode value = 0 }
+			set_variable = { name = abu_upgrade_depth value = 3 }
+			abu_begin_upgrade_with_preview_effect = yes
+		}
+	}
+
+	ai_will_do = { base = 0 }
 }

@@ -1,0 +1,4 @@
+# Collapsible group for all Automated Building Upgrade decisions.
+abu_decisions = {
+	sort_order = 15
+}

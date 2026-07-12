@@ -1,9 +1,217 @@
-# Player domain only - checks if a province has at least one building that can be upgraded.
+# Upgrade mode variable on character: 0 = all, 1 = holdings, 2 = economic, 3 = military
+# Upgrade scope variable: unset/0 = full domain, 1 = capital county, 2 = current duchy
+# Upgrade depth variable: unset/0 = max, 1 = one tier, 2 = empty slots only, 3 = tier cap
+# Tier cap variable: abu_tier_cap (default 4 when depth = tier cap)
+# Gold reserve variable on character: abu_gold_reserve (unset or 0 = spend until broke)
+# Passive auto-upgrade: abu_passive_auto_upgrade (1 = enabled)
+# Duchy capital buildings: abu_include_duchy_capital (1 = include existing duchy buildings in upgrades)
+# Innovation tracking: abu_tracked_innovation_count, abu_building_innovation_count (pulse scratch)
+
+abu_character_can_afford_cost_trigger = {
+	OR = {
+		AND = {
+			has_variable = abu_dry_run
+			var:abu_dry_run = 1
+			OR = {
+				AND = {
+					OR = {
+						NOT = { has_variable = abu_gold_reserve }
+						var:abu_gold_reserve = 0
+					}
+					var:abu_simulated_gold >= $COST$
+				}
+				AND = {
+					has_variable = abu_gold_reserve
+					var:abu_gold_reserve > 0
+					var:abu_simulated_gold >= {
+						value = $COST$
+						add = var:abu_gold_reserve
+					}
+				}
+			}
+		}
+		AND = {
+			OR = {
+				NOT = { has_variable = abu_dry_run }
+				NOT = { var:abu_dry_run = 1 }
+			}
+			OR = {
+				AND = {
+					OR = {
+						NOT = { has_variable = abu_gold_reserve }
+						var:abu_gold_reserve = 0
+					}
+					gold >= $COST$
+				}
+				AND = {
+					has_variable = abu_gold_reserve
+					var:abu_gold_reserve > 0
+					gold >= {
+						value = $COST$
+						add = var:abu_gold_reserve
+					}
+				}
+			}
+		}
+	}
+}
+
+abu_can_construct_economic_building_trigger = {
+	has_free_building_slot = yes
+	NOT = { has_building_or_higher = $BUILDING$_01 }
+	building_$BUILDING$_requirement_terrain = yes
+	building_requirement_castle_city_church = { LEVEL = 01 }
+	province_owner.culture = { has_innovation = innovation_crop_rotation }
+	province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_1_cost } }
+}
+
+abu_can_construct_fortification_building_trigger = {
+	has_free_building_slot = yes
+	NOT = { has_building_or_higher = $BUILDING$_01 }
+	building_$BUILDING$_requirement_terrain = yes
+	building_requirement_castle_city_church = { LEVEL = 01 }
+	province_owner.culture = { has_innovation = innovation_motte }
+	province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_1_cost } }
+}
+
+abu_can_construct_recruitment_building_trigger = {
+	has_free_building_slot = yes
+	NOT = { has_building_or_higher = $BUILDING$_01 }
+	building_$BUILDING$_requirement_terrain = yes
+	building_requirement_castle_city_church = { LEVEL = 01 }
+	province_owner.culture = { has_innovation = innovation_barracks }
+	province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_1_cost } }
+}
+
+abu_upgrade_mode_includes_economic_trigger = {
+	OR = {
+		root = { var:abu_upgrade_mode = 0 }
+		root = { var:abu_upgrade_mode = 2 }
+	}
+}
+
+abu_upgrade_mode_includes_military_trigger = {
+	OR = {
+		root = { var:abu_upgrade_mode = 0 }
+		root = { var:abu_upgrade_mode = 3 }
+	}
+}
+
+abu_economic_slot_building_can_construct_trigger = {
+	OR = {
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = outposts } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = logging_camps } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = peat_quarries } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = plantations } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = quarries } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = hunting_grounds } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = pastures } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = cereal_fields } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = hill_farms } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = elephant_pens } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = common_tradeport } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = hospices } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = qanats } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = murex_farm } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = orchards } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = farm_estates } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = caravanserai } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = windmills } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = watermills } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = workshops } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = waterworks } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = paddy_fields } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = wind_furnace } }
+		AND = { abu_can_construct_economic_building_trigger = { BUILDING = smiths } }
+	}
+}
+
+abu_military_slot_building_can_construct_trigger = {
+	OR = {
+		AND = { abu_can_construct_fortification_building_trigger = { BUILDING = hill_forts } }
+		AND = { abu_can_construct_fortification_building_trigger = { BUILDING = ramparts } }
+		AND = { abu_can_construct_fortification_building_trigger = { BUILDING = curtain_walls } }
+		AND = { abu_can_construct_fortification_building_trigger = { BUILDING = watchtowers } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = military_camps } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = horse_pastures } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = hillside_grazing } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = warrior_lodges } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = barracks } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = camel_farms } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = regimental_grounds } }
+		AND = { abu_can_construct_recruitment_building_trigger = { BUILDING = stables } }
+	}
+}
+
+abu_can_construct_any_slot_building_for_mode_trigger = {
+	OR = {
+		AND = {
+			abu_upgrade_mode_includes_economic_trigger = yes
+			abu_economic_slot_building_can_construct_trigger = yes
+		}
+		AND = {
+			abu_upgrade_mode_includes_military_trigger = yes
+			abu_military_slot_building_can_construct_trigger = yes
+		}
+	}
+}
+
+abu_economic_slot_building_can_upgrade_trigger = {
+	OR = {
+		AND = { has_building_or_higher = outposts_01 has_lesser_building_trigger = { COMPARE = outposts } building_outposts_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = outposts } }
+		AND = { has_building_or_higher = logging_camps_01 has_lesser_building_trigger = { COMPARE = logging_camps } building_logging_camps_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = logging_camps } }
+		AND = { has_building_or_higher = peat_quarries_01 has_lesser_building_trigger = { COMPARE = peat_quarries } building_peat_quarries_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = peat_quarries } }
+		AND = { has_building_or_higher = plantations_01 has_lesser_building_trigger = { COMPARE = plantations } building_plantations_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = plantations } }
+		AND = { has_building_or_higher = quarries_01 has_lesser_building_trigger = { COMPARE = quarries } building_quarries_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = quarries } }
+		AND = { has_building_or_higher = hunting_grounds_01 has_lesser_building_trigger = { COMPARE = hunting_grounds } building_hunting_grounds_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = hunting_grounds } }
+		AND = { has_building_or_higher = pastures_01 has_lesser_building_trigger = { COMPARE = pastures } building_pastures_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = pastures } }
+		AND = { has_building_or_higher = cereal_fields_01 has_lesser_building_trigger = { COMPARE = cereal_fields } building_cereal_fields_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = cereal_fields } }
+		AND = { has_building_or_higher = hill_farms_01 has_lesser_building_trigger = { COMPARE = hill_farms } building_hill_farms_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = hill_farms } }
+		AND = { has_building_or_higher = elephant_pens_01 has_lesser_building_trigger = { COMPARE = elephant_pens } building_elephant_pens_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = elephant_pens } }
+		AND = { has_building_or_higher = common_tradeport_01 has_lesser_building_trigger = { COMPARE = common_tradeport } building_common_tradeport_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = common_tradeport } }
+		AND = { has_building_or_higher = hospices_01 has_lesser_building_trigger = { COMPARE = hospices } building_hospices_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = hospices } }
+		AND = { has_building_or_higher = qanats_01 has_lesser_building_trigger = { COMPARE = qanats } building_qanats_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = qanats } }
+		AND = { has_building_or_higher = murex_farm_01 has_lesser_building_trigger = { COMPARE = murex_farm } building_murex_farm_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = murex_farm } }
+		AND = { has_building_or_higher = orchards_01 has_lesser_building_trigger = { COMPARE = orchards } building_orchards_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = orchards } }
+		AND = { has_building_or_higher = farm_estates_01 has_lesser_building_trigger = { COMPARE = farm_estates } building_farm_estates_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = farm_estates } }
+		AND = { has_building_or_higher = caravanserai_01 has_lesser_building_trigger = { COMPARE = caravanserai } building_caravanserai_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = caravanserai } }
+		AND = { has_building_or_higher = windmills_01 has_lesser_building_trigger = { COMPARE = windmills } building_windmills_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = windmills } }
+		AND = { has_building_or_higher = watermills_01 has_lesser_building_trigger = { COMPARE = watermills } building_watermills_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = watermills } }
+		AND = { has_building_or_higher = workshops_01 has_lesser_building_trigger = { COMPARE = workshops } building_workshops_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = workshops } }
+		AND = { has_building_or_higher = waterworks_01 has_lesser_building_trigger = { COMPARE = waterworks } building_waterworks_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = waterworks } }
+		AND = { has_building_or_higher = paddy_fields_01 has_lesser_building_trigger = { COMPARE = paddy_fields } building_paddy_fields_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = paddy_fields } }
+		AND = { has_building_or_higher = wind_furnace_01 has_lesser_building_trigger = { COMPARE = wind_furnace } building_wind_furnace_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = wind_furnace } }
+		AND = { has_building_or_higher = smiths_01 has_lesser_building_trigger = { COMPARE = smiths } building_smiths_requirement_terrain = yes generic_economic_building_innovation_trigger = { BUILDING = smiths } }
+	}
+}
+
+abu_military_slot_building_can_upgrade_trigger = {
+	OR = {
+		AND = { has_building_or_higher = hill_forts_01 has_lesser_building_trigger = { COMPARE = hill_forts } building_hill_forts_requirement_terrain = yes generic_fortification_building_innovations_trigger = { BUILDING = hill_forts } }
+		AND = { has_building_or_higher = ramparts_01 has_lesser_building_trigger = { COMPARE = ramparts } building_ramparts_requirement_terrain = yes generic_fortification_building_innovations_trigger = { BUILDING = ramparts } }
+		AND = { has_building_or_higher = curtain_walls_01 has_lesser_building_trigger = { COMPARE = curtain_walls } building_curtain_walls_requirement_terrain = yes generic_fortification_building_innovations_trigger = { BUILDING = curtain_walls } }
+		AND = { has_building_or_higher = watchtowers_01 has_lesser_building_trigger = { COMPARE = watchtowers } building_watchtowers_requirement_terrain = yes generic_fortification_building_innovations_trigger = { BUILDING = watchtowers } }
+		AND = { has_building_or_higher = military_camps_01 has_lesser_building_trigger = { COMPARE = military_camps } building_military_camps_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = military_camps } }
+		AND = { has_building_or_higher = horse_pastures_01 has_lesser_building_trigger = { COMPARE = horse_pastures } building_horse_pastures_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = horse_pastures } }
+		AND = { has_building_or_higher = hillside_grazing_01 has_lesser_building_trigger = { COMPARE = hillside_grazing } building_hillside_grazing_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = hillside_grazing } }
+		AND = { has_building_or_higher = warrior_lodges_01 has_lesser_building_trigger = { COMPARE = warrior_lodges } building_warrior_lodges_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = warrior_lodges } }
+		AND = { has_building_or_higher = barracks_01 has_lesser_building_trigger = { COMPARE = barracks } building_barracks_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = barracks } }
+		AND = { has_building_or_higher = camel_farms_01 has_lesser_building_trigger = { COMPARE = camel_farms } building_camel_farms_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = camel_farms } }
+		AND = { has_building_or_higher = regimental_grounds_01 has_lesser_building_trigger = { COMPARE = regimental_grounds } building_regimental_grounds_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = regimental_grounds } }
+		AND = { has_building_or_higher = stables_01 has_lesser_building_trigger = { COMPARE = stables } building_stables_requirement_terrain = yes generic_recruitment_building_innovations_trigger = { BUILDING = stables } }
+	}
+}
+
+# Player domain only - checks if a province has at least one building that can be upgraded or constructed.
 abu_province_has_upgradable_building_trigger = {
 	NOT = { has_ongoing_construction = yes }
 	OR = {
 		abu_main_holding_can_upgrade_trigger = yes
-		abu_slot_building_can_upgrade_trigger = yes
+		abu_economic_slot_building_can_upgrade_trigger = yes
+		abu_military_slot_building_can_upgrade_trigger = yes
+		abu_economic_slot_building_can_construct_trigger = yes
+		abu_military_slot_building_can_construct_trigger = yes
+		abu_duchy_capital_building_can_upgrade_trigger = yes
 	}
 }
 
@@ -81,50 +289,36 @@ abu_main_holding_can_upgrade_trigger = {
 	}
 }
 
-abu_slot_building_can_upgrade_trigger = {
-	OR = {
-		AND = { has_building_or_higher = outposts_01 has_lesser_building_trigger = { COMPARE = outposts } }
-		AND = { has_building_or_higher = logging_camps_01 has_lesser_building_trigger = { COMPARE = logging_camps } }
-		AND = { has_building_or_higher = peat_quarries_01 has_lesser_building_trigger = { COMPARE = peat_quarries } }
-		AND = { has_building_or_higher = plantations_01 has_lesser_building_trigger = { COMPARE = plantations } }
-		AND = { has_building_or_higher = quarries_01 has_lesser_building_trigger = { COMPARE = quarries } }
-		AND = { has_building_or_higher = hunting_grounds_01 has_lesser_building_trigger = { COMPARE = hunting_grounds } }
-		AND = { has_building_or_higher = pastures_01 has_lesser_building_trigger = { COMPARE = pastures } }
-		AND = { has_building_or_higher = cereal_fields_01 has_lesser_building_trigger = { COMPARE = cereal_fields } }
-		AND = { has_building_or_higher = hill_farms_01 has_lesser_building_trigger = { COMPARE = hill_farms } }
-		AND = { has_building_or_higher = elephant_pens_01 has_lesser_building_trigger = { COMPARE = elephant_pens } }
-		AND = { has_building_or_higher = common_tradeport_01 has_lesser_building_trigger = { COMPARE = common_tradeport } }
-		AND = { has_building_or_higher = hospices_01 has_lesser_building_trigger = { COMPARE = hospices } }
-		AND = { has_building_or_higher = qanats_01 has_lesser_building_trigger = { COMPARE = qanats } }
-		AND = { has_building_or_higher = murex_farm_01 has_lesser_building_trigger = { COMPARE = murex_farm } }
-		AND = { has_building_or_higher = orchards_01 has_lesser_building_trigger = { COMPARE = orchards } }
-		AND = { has_building_or_higher = farm_estates_01 has_lesser_building_trigger = { COMPARE = farm_estates } }
-		AND = { has_building_or_higher = caravanserai_01 has_lesser_building_trigger = { COMPARE = caravanserai } }
-		AND = { has_building_or_higher = windmills_01 has_lesser_building_trigger = { COMPARE = windmills } }
-		AND = { has_building_or_higher = watermills_01 has_lesser_building_trigger = { COMPARE = watermills } }
-		AND = { has_building_or_higher = workshops_01 has_lesser_building_trigger = { COMPARE = workshops } }
-		AND = { has_building_or_higher = waterworks_01 has_lesser_building_trigger = { COMPARE = waterworks } }
-		AND = { has_building_or_higher = paddy_fields_01 has_lesser_building_trigger = { COMPARE = paddy_fields } }
-		AND = { has_building_or_higher = wind_furnace_01 has_lesser_building_trigger = { COMPARE = wind_furnace } }
-		AND = { has_building_or_higher = smiths_01 has_lesser_building_trigger = { COMPARE = smiths } }
-		AND = { has_building_or_higher = hill_forts_01 has_lesser_building_trigger = { COMPARE = hill_forts } }
-		AND = { has_building_or_higher = ramparts_01 has_lesser_building_trigger = { COMPARE = ramparts } }
-		AND = { has_building_or_higher = curtain_walls_01 has_lesser_building_trigger = { COMPARE = curtain_walls } }
-		AND = { has_building_or_higher = watchtowers_01 has_lesser_building_trigger = { COMPARE = watchtowers } }
-		AND = { has_building_or_higher = military_camps_01 has_lesser_building_trigger = { COMPARE = military_camps } }
-		AND = { has_building_or_higher = horse_pastures_01 has_lesser_building_trigger = { COMPARE = horse_pastures } }
-		AND = { has_building_or_higher = hillside_grazing_01 has_lesser_building_trigger = { COMPARE = hillside_grazing } }
-		AND = { has_building_or_higher = warrior_lodges_01 has_lesser_building_trigger = { COMPARE = warrior_lodges } }
-		AND = { has_building_or_higher = barracks_01 has_lesser_building_trigger = { COMPARE = barracks } }
-		AND = { has_building_or_higher = camel_farms_01 has_lesser_building_trigger = { COMPARE = camel_farms } }
-		AND = { has_building_or_higher = regimental_grounds_01 has_lesser_building_trigger = { COMPARE = regimental_grounds } }
-		AND = { has_building_or_higher = stables_01 has_lesser_building_trigger = { COMPARE = stables } }
-	}
-}
-
 abu_has_upgradable_building_in_domain_trigger = {
 	any_directly_owned_province = {
 		abu_province_has_upgradable_building_trigger = yes
+	}
+}
+
+abu_has_upgradable_holdings_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		abu_main_holding_can_upgrade_trigger = yes
+	}
+}
+
+abu_has_upgradable_economic_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		OR = {
+			abu_economic_slot_building_can_upgrade_trigger = yes
+			abu_economic_slot_building_can_construct_trigger = yes
+		}
+	}
+}
+
+abu_has_upgradable_military_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		OR = {
+			abu_military_slot_building_can_upgrade_trigger = yes
+			abu_military_slot_building_can_construct_trigger = yes
+		}
 	}
 }
 
@@ -135,81 +329,81 @@ abu_main_holding_can_afford_upgrade_trigger = {
 			has_building = castle_01
 			NOT = { has_building_or_higher = castle_02 }
 			culture = { has_innovation = innovation_battlements }
-			province_owner = { gold >= main_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_2_cost } }
 		}
 		AND = {
 			has_holding_type = castle_holding
 			has_building = castle_02
 			NOT = { has_building_or_higher = castle_03 }
 			culture = { has_innovation = innovation_hoardings }
-			province_owner = { gold >= main_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_3_cost } }
 		}
 		AND = {
 			has_holding_type = castle_holding
 			has_building = castle_03
 			NOT = { has_building_or_higher = castle_04 }
 			culture = { has_innovation = innovation_machicolations }
-			province_owner = { gold >= main_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_4_cost } }
 		}
 		AND = {
 			has_holding_type = city_holding
 			has_building = city_01
 			NOT = { has_building_or_higher = city_02 }
 			culture = { has_innovation = innovation_city_planning }
-			province_owner = { gold >= main_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_2_cost } }
 		}
 		AND = {
 			has_holding_type = city_holding
 			has_building = city_02
 			NOT = { has_building_or_higher = city_03 }
 			culture = { has_innovation = innovation_manorialism }
-			province_owner = { gold >= main_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_3_cost } }
 		}
 		AND = {
 			has_holding_type = city_holding
 			has_building = city_03
 			NOT = { has_building_or_higher = city_04 }
 			culture = { has_innovation = innovation_guilds }
-			province_owner = { gold >= main_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_4_cost } }
 		}
 		AND = {
 			has_holding_type = church_holding
 			has_building = temple_01
 			NOT = { has_building_or_higher = temple_02 }
 			culture = { has_innovation = innovation_city_planning }
-			province_owner = { gold >= main_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_2_cost } }
 		}
 		AND = {
 			has_holding_type = church_holding
 			has_building = temple_02
 			NOT = { has_building_or_higher = temple_03 }
 			culture = { has_innovation = innovation_manorialism }
-			province_owner = { gold >= main_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_3_cost } }
 		}
 		AND = {
 			has_holding_type = church_holding
 			has_building = temple_03
 			NOT = { has_building_or_higher = temple_04 }
 			culture = { has_innovation = innovation_guilds }
-			province_owner = { gold >= main_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = main_building_tier_4_cost } }
 		}
 		AND = {
 			has_holding_type = tribal_holding
 			has_building = tribe_01
 			NOT = { has_building_or_higher = tribe_02 }
-			province_owner = { gold >= tribal_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = tribal_building_tier_2_cost } }
 		}
 		AND = {
 			has_holding_type = tribal_holding
 			has_building = tribe_02
 			NOT = { has_building_or_higher = tribe_03 }
-			province_owner = { gold >= tribal_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = tribal_building_tier_3_cost } }
 		}
 		AND = {
 			has_holding_type = tribal_holding
 			has_building = tribe_03
 			NOT = { has_building_or_higher = tribe_04 }
-			province_owner = { gold >= tribal_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = tribal_building_tier_4_cost } }
 		}
 	}
 }
@@ -221,49 +415,49 @@ abu_can_afford_economic_slot_upgrade_trigger = {
 			NOT = { has_building_or_higher = $BUILDING$_02 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_2_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_02
 			NOT = { has_building_or_higher = $BUILDING$_03 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_3_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_03
 			NOT = { has_building_or_higher = $BUILDING$_04 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_4_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_04
 			NOT = { has_building_or_higher = $BUILDING$_05 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_5_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_5_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_05
 			NOT = { has_building_or_higher = $BUILDING$_06 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_6_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_6_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_06
 			NOT = { has_building_or_higher = $BUILDING$_07 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_7_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_7_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_07
 			NOT = { has_building_or_higher = $BUILDING$_08 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_economic_building_innovation_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_8_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_8_cost } }
 		}
 	}
 }
@@ -275,49 +469,49 @@ abu_can_afford_fortification_slot_upgrade_trigger = {
 			NOT = { has_building_or_higher = $BUILDING$_02 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_2_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_02
 			NOT = { has_building_or_higher = $BUILDING$_03 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_3_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_03
 			NOT = { has_building_or_higher = $BUILDING$_04 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_4_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_04
 			NOT = { has_building_or_higher = $BUILDING$_05 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_5_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_5_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_05
 			NOT = { has_building_or_higher = $BUILDING$_06 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_6_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_6_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_06
 			NOT = { has_building_or_higher = $BUILDING$_07 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_7_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_7_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_07
 			NOT = { has_building_or_higher = $BUILDING$_08 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_fortification_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_8_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_8_cost } }
 		}
 	}
 }
@@ -329,54 +523,54 @@ abu_can_afford_recruitment_slot_upgrade_trigger = {
 			NOT = { has_building_or_higher = $BUILDING$_02 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_2_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_2_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_02
 			NOT = { has_building_or_higher = $BUILDING$_03 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_3_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_3_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_03
 			NOT = { has_building_or_higher = $BUILDING$_04 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_4_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_4_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_04
 			NOT = { has_building_or_higher = $BUILDING$_05 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_5_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_5_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_05
 			NOT = { has_building_or_higher = $BUILDING$_06 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_6_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_6_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_06
 			NOT = { has_building_or_higher = $BUILDING$_07 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_7_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_7_cost } }
 		}
 		AND = {
 			has_building = $BUILDING$_07
 			NOT = { has_building_or_higher = $BUILDING$_08 }
 			building_$BUILDING$_requirement_terrain = yes
 			generic_recruitment_building_innovations_trigger = { BUILDING = $BUILDING$ }
-			province_owner = { gold >= normal_building_tier_8_cost }
+			province_owner = { abu_character_can_afford_cost_trigger = { COST = normal_building_tier_8_cost } }
 		}
 	}
 }
 
-abu_slot_building_can_afford_upgrade_trigger = {
+abu_economic_slot_building_can_afford_upgrade_trigger = {
 	OR = {
 		AND = { has_building_or_higher = outposts_01 has_lesser_building_trigger = { COMPARE = outposts } abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = outposts } }
 		AND = { has_building_or_higher = logging_camps_01 has_lesser_building_trigger = { COMPARE = logging_camps } abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = logging_camps } }
@@ -402,6 +596,11 @@ abu_slot_building_can_afford_upgrade_trigger = {
 		AND = { has_building_or_higher = paddy_fields_01 has_lesser_building_trigger = { COMPARE = paddy_fields } abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = paddy_fields } }
 		AND = { has_building_or_higher = wind_furnace_01 has_lesser_building_trigger = { COMPARE = wind_furnace } abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = wind_furnace } }
 		AND = { has_building_or_higher = smiths_01 has_lesser_building_trigger = { COMPARE = smiths } abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = smiths } }
+	}
+}
+
+abu_military_slot_building_can_afford_upgrade_trigger = {
+	OR = {
 		AND = { has_building_or_higher = hill_forts_01 has_lesser_building_trigger = { COMPARE = hill_forts } abu_can_afford_fortification_slot_upgrade_trigger = { BUILDING = hill_forts } }
 		AND = { has_building_or_higher = ramparts_01 has_lesser_building_trigger = { COMPARE = ramparts } abu_can_afford_fortification_slot_upgrade_trigger = { BUILDING = ramparts } }
 		AND = { has_building_or_higher = curtain_walls_01 has_lesser_building_trigger = { COMPARE = curtain_walls } abu_can_afford_fortification_slot_upgrade_trigger = { BUILDING = curtain_walls } }
@@ -421,7 +620,11 @@ abu_province_has_affordable_upgrade_trigger = {
 	NOT = { has_ongoing_construction = yes }
 	OR = {
 		abu_main_holding_can_afford_upgrade_trigger = yes
-		abu_slot_building_can_afford_upgrade_trigger = yes
+		abu_economic_slot_building_can_afford_upgrade_trigger = yes
+		abu_military_slot_building_can_afford_upgrade_trigger = yes
+		abu_economic_slot_building_can_construct_trigger = yes
+		abu_military_slot_building_can_construct_trigger = yes
+		abu_duchy_capital_building_can_upgrade_trigger = yes
 	}
 }
 
@@ -429,4 +632,732 @@ abu_has_affordable_upgrade_in_domain_trigger = {
 	any_directly_owned_province = {
 		abu_province_has_affordable_upgrade_trigger = yes
 	}
+}
+
+abu_has_affordable_holdings_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		abu_main_holding_can_afford_upgrade_trigger = yes
+	}
+}
+
+abu_has_affordable_economic_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		OR = {
+			abu_economic_slot_building_can_afford_upgrade_trigger = yes
+			abu_economic_slot_building_can_construct_trigger = yes
+		}
+	}
+}
+
+abu_has_affordable_military_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		OR = {
+			abu_military_slot_building_can_afford_upgrade_trigger = yes
+			abu_military_slot_building_can_construct_trigger = yes
+		}
+	}
+}
+
+abu_province_needs_snapshot_revert_trigger = {
+	OR = {
+		AND = {
+			var:abu_snap_main_type = 1
+			OR = {
+				AND = {
+					var:abu_snap_main < 4
+					has_building = castle_04
+				}
+				AND = {
+					var:abu_snap_main < 3
+					has_building = castle_03
+				}
+				AND = {
+					var:abu_snap_main < 2
+					has_building = castle_02
+				}
+				AND = {
+					var:abu_snap_main < 1
+					has_building = castle_01
+				}
+			}
+		}
+		AND = {
+			var:abu_snap_main_type = 2
+			OR = {
+				AND = {
+					var:abu_snap_main < 4
+					has_building = city_04
+				}
+				AND = {
+					var:abu_snap_main < 3
+					has_building = city_03
+				}
+				AND = {
+					var:abu_snap_main < 2
+					has_building = city_02
+				}
+				AND = {
+					var:abu_snap_main < 1
+					has_building = city_01
+				}
+			}
+		}
+		AND = {
+			var:abu_snap_main_type = 3
+			OR = {
+				AND = {
+					var:abu_snap_main < 4
+					has_building = temple_04
+				}
+				AND = {
+					var:abu_snap_main < 3
+					has_building = temple_03
+				}
+				AND = {
+					var:abu_snap_main < 2
+					has_building = temple_02
+				}
+				AND = {
+					var:abu_snap_main < 1
+					has_building = temple_01
+				}
+			}
+		}
+		AND = {
+			var:abu_snap_main_type = 4
+			OR = {
+				AND = {
+					var:abu_snap_main < 4
+					has_building = tribe_04
+				}
+				AND = {
+					var:abu_snap_main < 3
+					has_building = tribe_03
+				}
+				AND = {
+					var:abu_snap_main < 2
+					has_building = tribe_02
+				}
+				AND = {
+					var:abu_snap_main < 1
+					has_building = tribe_01
+				}
+			}
+		}
+		abu_slot_building_above_snapshot_trigger = { BUILDING = outposts }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = logging_camps }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = peat_quarries }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = plantations }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = quarries }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = hunting_grounds }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = pastures }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = cereal_fields }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = hill_farms }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = elephant_pens }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = common_tradeport }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = hospices }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = qanats }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = murex_farm }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = orchards }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = farm_estates }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = caravanserai }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = windmills }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = watermills }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = workshops }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = waterworks }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = paddy_fields }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = wind_furnace }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = smiths }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = hill_forts }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = ramparts }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = curtain_walls }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = watchtowers }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = military_camps }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = horse_pastures }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = hillside_grazing }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = warrior_lodges }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = barracks }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = camel_farms }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = regimental_grounds }
+		abu_slot_building_above_snapshot_trigger = { BUILDING = stables }
+	}
+}
+
+abu_slot_building_above_snapshot_trigger = {
+	OR = {
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ = 0
+			has_building_or_higher = $BUILDING$_01
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 8
+			has_building = $BUILDING$_08
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 7
+			has_building = $BUILDING$_07
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 6
+			has_building = $BUILDING$_06
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 5
+			has_building = $BUILDING$_05
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 4
+			has_building = $BUILDING$_04
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 3
+			has_building = $BUILDING$_03
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 2
+			has_building = $BUILDING$_02
+		}
+		AND = {
+			has_variable = abu_snap_$BUILDING$
+			var:abu_snap_$BUILDING$ < 1
+			has_building = $BUILDING$_01
+		}
+	}
+}
+
+# --- Completion report: mode-aware province checks ---
+
+abu_upgrade_mode_includes_holdings_trigger = {
+	OR = {
+		root = { var:abu_upgrade_mode = 0 }
+		root = { var:abu_upgrade_mode = 1 }
+	}
+}
+
+abu_province_was_upgraded_trigger = {
+	root = {
+		is_target_in_variable_list = {
+			name = abu_upgraded_provinces
+			target = prev
+		}
+	}
+}
+
+abu_province_has_mode_relevant_upgradable_trigger = {
+	NOT = { has_ongoing_construction = yes }
+	OR = {
+		AND = {
+			abu_upgrade_mode_includes_holdings_trigger = yes
+			abu_main_holding_can_upgrade_trigger = yes
+		}
+		AND = {
+			abu_upgrade_mode_includes_economic_trigger = yes
+			OR = {
+				abu_economic_slot_building_can_upgrade_trigger = yes
+				abu_economic_slot_building_can_construct_trigger = yes
+			}
+		}
+		AND = {
+			abu_upgrade_mode_includes_military_trigger = yes
+			OR = {
+				abu_military_slot_building_can_upgrade_trigger = yes
+				abu_military_slot_building_can_construct_trigger = yes
+			}
+		}
+		abu_duchy_capital_building_can_upgrade_trigger = yes
+	}
+}
+
+abu_province_has_mode_relevant_affordable_trigger = {
+	NOT = { has_ongoing_construction = yes }
+	OR = {
+		AND = {
+			abu_upgrade_mode_includes_holdings_trigger = yes
+			abu_main_holding_can_afford_upgrade_trigger = yes
+		}
+		AND = {
+			abu_upgrade_mode_includes_economic_trigger = yes
+			OR = {
+				abu_economic_slot_building_can_afford_upgrade_trigger = yes
+				abu_economic_slot_building_can_construct_trigger = yes
+			}
+		}
+		AND = {
+			abu_upgrade_mode_includes_military_trigger = yes
+			OR = {
+				abu_military_slot_building_can_afford_upgrade_trigger = yes
+				abu_military_slot_building_can_construct_trigger = yes
+			}
+		}
+		abu_duchy_capital_building_can_upgrade_trigger = yes
+	}
+}
+
+abu_main_holding_blocked_by_innovation_trigger = {
+	OR = {
+		AND = {
+			has_holding_type = castle_holding
+			has_building = castle_01
+			NOT = { has_building_or_higher = castle_02 }
+			NOT = { culture = { has_innovation = innovation_battlements } }
+		}
+		AND = {
+			has_holding_type = castle_holding
+			has_building = castle_02
+			NOT = { has_building_or_higher = castle_03 }
+			NOT = { culture = { has_innovation = innovation_hoardings } }
+		}
+		AND = {
+			has_holding_type = castle_holding
+			has_building = castle_03
+			NOT = { has_building_or_higher = castle_04 }
+			NOT = { culture = { has_innovation = innovation_machicolations } }
+		}
+		AND = {
+			has_holding_type = city_holding
+			has_building = city_01
+			NOT = { has_building_or_higher = city_02 }
+			NOT = { culture = { has_innovation = innovation_city_planning } }
+		}
+		AND = {
+			has_holding_type = city_holding
+			has_building = city_02
+			NOT = { has_building_or_higher = city_03 }
+			NOT = { culture = { has_innovation = innovation_manorialism } }
+		}
+		AND = {
+			has_holding_type = city_holding
+			has_building = city_03
+			NOT = { has_building_or_higher = city_04 }
+			NOT = { culture = { has_innovation = innovation_guilds } }
+		}
+		AND = {
+			has_holding_type = church_holding
+			has_building = temple_01
+			NOT = { has_building_or_higher = temple_02 }
+			NOT = { culture = { has_innovation = innovation_city_planning } }
+		}
+		AND = {
+			has_holding_type = church_holding
+			has_building = temple_02
+			NOT = { has_building_or_higher = temple_03 }
+			NOT = { culture = { has_innovation = innovation_manorialism } }
+		}
+		AND = {
+			has_holding_type = church_holding
+			has_building = temple_03
+			NOT = { has_building_or_higher = temple_04 }
+			NOT = { culture = { has_innovation = innovation_guilds } }
+		}
+	}
+}
+
+abu_economic_slot_blocked_by_innovation_trigger = {
+	OR = {
+		AND = { has_building_or_higher = outposts_01 has_lesser_building_trigger = { COMPARE = outposts } building_outposts_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = outposts } } }
+		AND = { has_building_or_higher = logging_camps_01 has_lesser_building_trigger = { COMPARE = logging_camps } building_logging_camps_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = logging_camps } } }
+		AND = { has_building_or_higher = peat_quarries_01 has_lesser_building_trigger = { COMPARE = peat_quarries } building_peat_quarries_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = peat_quarries } } }
+		AND = { has_building_or_higher = plantations_01 has_lesser_building_trigger = { COMPARE = plantations } building_plantations_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = plantations } } }
+		AND = { has_building_or_higher = quarries_01 has_lesser_building_trigger = { COMPARE = quarries } building_quarries_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = quarries } } }
+		AND = { has_building_or_higher = hunting_grounds_01 has_lesser_building_trigger = { COMPARE = hunting_grounds } building_hunting_grounds_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = hunting_grounds } } }
+		AND = { has_building_or_higher = pastures_01 has_lesser_building_trigger = { COMPARE = pastures } building_pastures_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = pastures } } }
+		AND = { has_building_or_higher = cereal_fields_01 has_lesser_building_trigger = { COMPARE = cereal_fields } building_cereal_fields_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = cereal_fields } } }
+		AND = { has_building_or_higher = hill_farms_01 has_lesser_building_trigger = { COMPARE = hill_farms } building_hill_farms_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = hill_farms } } }
+		AND = { has_building_or_higher = elephant_pens_01 has_lesser_building_trigger = { COMPARE = elephant_pens } building_elephant_pens_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = elephant_pens } } }
+		AND = { has_building_or_higher = common_tradeport_01 has_lesser_building_trigger = { COMPARE = common_tradeport } building_common_tradeport_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = common_tradeport } } }
+		AND = { has_building_or_higher = hospices_01 has_lesser_building_trigger = { COMPARE = hospices } building_hospices_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = hospices } } }
+		AND = { has_building_or_higher = qanats_01 has_lesser_building_trigger = { COMPARE = qanats } building_qanats_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = qanats } } }
+		AND = { has_building_or_higher = murex_farm_01 has_lesser_building_trigger = { COMPARE = murex_farm } building_murex_farm_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = murex_farm } } }
+		AND = { has_building_or_higher = orchards_01 has_lesser_building_trigger = { COMPARE = orchards } building_orchards_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = orchards } } }
+		AND = { has_building_or_higher = farm_estates_01 has_lesser_building_trigger = { COMPARE = farm_estates } building_farm_estates_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = farm_estates } } }
+		AND = { has_building_or_higher = caravanserai_01 has_lesser_building_trigger = { COMPARE = caravanserai } building_caravanserai_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = caravanserai } } }
+		AND = { has_building_or_higher = windmills_01 has_lesser_building_trigger = { COMPARE = windmills } building_windmills_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = windmills } } }
+		AND = { has_building_or_higher = watermills_01 has_lesser_building_trigger = { COMPARE = watermills } building_watermills_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = watermills } } }
+		AND = { has_building_or_higher = workshops_01 has_lesser_building_trigger = { COMPARE = workshops } building_workshops_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = workshops } } }
+		AND = { has_building_or_higher = waterworks_01 has_lesser_building_trigger = { COMPARE = waterworks } building_waterworks_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = waterworks } } }
+		AND = { has_building_or_higher = paddy_fields_01 has_lesser_building_trigger = { COMPARE = paddy_fields } building_paddy_fields_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = paddy_fields } } }
+		AND = { has_building_or_higher = wind_furnace_01 has_lesser_building_trigger = { COMPARE = wind_furnace } building_wind_furnace_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = wind_furnace } } }
+		AND = { has_building_or_higher = smiths_01 has_lesser_building_trigger = { COMPARE = smiths } building_smiths_requirement_terrain = yes NOT = { generic_economic_building_innovation_trigger = { BUILDING = smiths } } }
+	}
+}
+
+abu_military_slot_blocked_by_innovation_trigger = {
+	OR = {
+		AND = { has_building_or_higher = hill_forts_01 has_lesser_building_trigger = { COMPARE = hill_forts } building_hill_forts_requirement_terrain = yes NOT = { generic_fortification_building_innovations_trigger = { BUILDING = hill_forts } } }
+		AND = { has_building_or_higher = ramparts_01 has_lesser_building_trigger = { COMPARE = ramparts } building_ramparts_requirement_terrain = yes NOT = { generic_fortification_building_innovations_trigger = { BUILDING = ramparts } } }
+		AND = { has_building_or_higher = curtain_walls_01 has_lesser_building_trigger = { COMPARE = curtain_walls } building_curtain_walls_requirement_terrain = yes NOT = { generic_fortification_building_innovations_trigger = { BUILDING = curtain_walls } } }
+		AND = { has_building_or_higher = watchtowers_01 has_lesser_building_trigger = { COMPARE = watchtowers } building_watchtowers_requirement_terrain = yes NOT = { generic_fortification_building_innovations_trigger = { BUILDING = watchtowers } } }
+		AND = { has_building_or_higher = military_camps_01 has_lesser_building_trigger = { COMPARE = military_camps } building_military_camps_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = military_camps } } }
+		AND = { has_building_or_higher = horse_pastures_01 has_lesser_building_trigger = { COMPARE = horse_pastures } building_horse_pastures_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = horse_pastures } } }
+		AND = { has_building_or_higher = hillside_grazing_01 has_lesser_building_trigger = { COMPARE = hillside_grazing } building_hillside_grazing_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = hillside_grazing } } }
+		AND = { has_building_or_higher = warrior_lodges_01 has_lesser_building_trigger = { COMPARE = warrior_lodges } building_warrior_lodges_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = warrior_lodges } } }
+		AND = { has_building_or_higher = barracks_01 has_lesser_building_trigger = { COMPARE = barracks } building_barracks_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = barracks } } }
+		AND = { has_building_or_higher = camel_farms_01 has_lesser_building_trigger = { COMPARE = camel_farms } building_camel_farms_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = camel_farms } } }
+		AND = { has_building_or_higher = regimental_grounds_01 has_lesser_building_trigger = { COMPARE = regimental_grounds } building_regimental_grounds_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = regimental_grounds } } }
+		AND = { has_building_or_higher = stables_01 has_lesser_building_trigger = { COMPARE = stables } building_stables_requirement_terrain = yes NOT = { generic_recruitment_building_innovations_trigger = { BUILDING = stables } } }
+	}
+}
+
+abu_province_blocked_by_innovation_for_mode_trigger = {
+	OR = {
+		AND = {
+			abu_upgrade_mode_includes_holdings_trigger = yes
+			abu_main_holding_blocked_by_innovation_trigger = yes
+		}
+		AND = {
+			abu_upgrade_mode_includes_economic_trigger = yes
+			abu_economic_slot_blocked_by_innovation_trigger = yes
+		}
+		AND = {
+			abu_upgrade_mode_includes_military_trigger = yes
+			abu_military_slot_blocked_by_innovation_trigger = yes
+		}
+	}
+}
+
+# --- Scope, depth, and tier-cap helpers ---
+
+abu_upgrade_scope_is_capital_county_trigger = {
+	root = {
+		has_variable = abu_upgrade_scope
+		var:abu_upgrade_scope = 1
+	}
+}
+
+abu_upgrade_scope_is_current_duchy_trigger = {
+	root = {
+		has_variable = abu_upgrade_scope
+		var:abu_upgrade_scope = 2
+	}
+}
+
+abu_province_in_capital_county_trigger = {
+	county = root.capital_county
+}
+
+abu_province_in_current_duchy_trigger = {
+	trigger_if = {
+		limit = {
+			root = { exists = location }
+		}
+		county.duchy = root.location.county.duchy
+	}
+	trigger_else = {
+		county.duchy = root.capital_county.duchy
+	}
+}
+
+abu_province_in_upgrade_scope_trigger = {
+	OR = {
+		AND = {
+			root = {
+				OR = {
+					NOT = { has_variable = abu_upgrade_scope }
+					var:abu_upgrade_scope = 0
+				}
+			}
+		}
+		AND = {
+			abu_upgrade_scope_is_capital_county_trigger = yes
+			abu_province_in_capital_county_trigger = yes
+		}
+		AND = {
+			abu_upgrade_scope_is_current_duchy_trigger = yes
+			abu_province_in_current_duchy_trigger = yes
+		}
+	}
+}
+
+abu_upgrade_depth_is_one_tier_trigger = {
+	root = {
+		has_variable = abu_upgrade_depth
+		var:abu_upgrade_depth = 1
+	}
+}
+
+abu_upgrade_depth_is_empty_slots_trigger = {
+	root = {
+		has_variable = abu_upgrade_depth
+		var:abu_upgrade_depth = 2
+	}
+}
+
+abu_upgrade_depth_is_tier_cap_trigger = {
+	root = {
+		has_variable = abu_upgrade_depth
+		var:abu_upgrade_depth = 3
+	}
+}
+
+abu_effective_tier_cap_is_2_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap <= 2
+	}
+}
+
+abu_effective_tier_cap_is_3_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap = 3
+	}
+}
+
+abu_effective_tier_cap_is_4_trigger = {
+	root = {
+		OR = {
+			NOT = { has_variable = abu_tier_cap }
+			var:abu_tier_cap = 4
+		}
+	}
+}
+
+abu_effective_tier_cap_is_5_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap = 5
+	}
+}
+
+abu_effective_tier_cap_is_6_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap = 6
+	}
+}
+
+abu_effective_tier_cap_is_7_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap = 7
+	}
+}
+
+abu_effective_tier_cap_is_8_trigger = {
+	root = {
+		has_variable = abu_tier_cap
+		var:abu_tier_cap >= 8
+	}
+}
+
+abu_main_holding_at_tier_cap_trigger = {
+	abu_upgrade_depth_is_tier_cap_trigger = yes
+	abu_main_holding_at_effective_tier_cap_trigger = yes
+}
+
+abu_main_holding_at_effective_tier_cap_trigger = {
+	OR = {
+		AND = {
+			abu_effective_tier_cap_is_2_trigger = yes
+			OR = {
+				has_building_or_higher = castle_02
+				has_building_or_higher = city_02
+				has_building_or_higher = temple_02
+				has_building_or_higher = tribe_02
+			}
+		}
+		AND = {
+			abu_effective_tier_cap_is_3_trigger = yes
+			OR = {
+				has_building_or_higher = castle_03
+				has_building_or_higher = city_03
+				has_building_or_higher = temple_03
+				has_building_or_higher = tribe_03
+			}
+		}
+		AND = {
+			OR = {
+				abu_effective_tier_cap_is_4_trigger = yes
+				abu_effective_tier_cap_is_5_trigger = yes
+				abu_effective_tier_cap_is_6_trigger = yes
+				abu_effective_tier_cap_is_7_trigger = yes
+				abu_effective_tier_cap_is_8_trigger = yes
+			}
+			OR = {
+				has_building_or_higher = castle_04
+				has_building_or_higher = city_04
+				has_building_or_higher = temple_04
+				has_building_or_higher = tribe_04
+			}
+		}
+	}
+}
+
+abu_slot_building_at_tier_cap_trigger = {
+	abu_upgrade_depth_is_tier_cap_trigger = yes
+	abu_slot_building_at_effective_tier_cap_trigger = { BUILDING = $BUILDING$ }
+}
+
+abu_slot_building_at_effective_tier_cap_trigger = {
+	OR = {
+		AND = { abu_effective_tier_cap_is_2_trigger = yes has_building_or_higher = $BUILDING$_02 }
+		AND = { abu_effective_tier_cap_is_3_trigger = yes has_building_or_higher = $BUILDING$_03 }
+		AND = { abu_effective_tier_cap_is_4_trigger = yes has_building_or_higher = $BUILDING$_04 }
+		AND = { abu_effective_tier_cap_is_5_trigger = yes has_building_or_higher = $BUILDING$_05 }
+		AND = { abu_effective_tier_cap_is_6_trigger = yes has_building_or_higher = $BUILDING$_06 }
+		AND = { abu_effective_tier_cap_is_7_trigger = yes has_building_or_higher = $BUILDING$_07 }
+		AND = { abu_effective_tier_cap_is_8_trigger = yes has_building_or_higher = $BUILDING$_08 }
+	}
+}
+
+abu_province_has_affordable_empty_slot_trigger = {
+	NOT = { has_ongoing_construction = yes }
+	OR = {
+		abu_economic_slot_building_can_construct_trigger = yes
+		abu_military_slot_building_can_construct_trigger = yes
+	}
+}
+
+abu_has_affordable_empty_slot_in_domain_trigger = {
+	any_directly_owned_province = {
+		abu_province_has_affordable_empty_slot_trigger = yes
+	}
+}
+
+abu_has_affordable_empty_slot_in_capital_county_trigger = {
+	any_directly_owned_province = {
+		abu_province_in_capital_county_trigger = yes
+		abu_province_has_affordable_empty_slot_trigger = yes
+	}
+}
+
+abu_has_affordable_empty_slot_in_current_duchy_trigger = {
+	any_directly_owned_province = {
+		abu_province_in_current_duchy_trigger = yes
+		abu_province_has_affordable_empty_slot_trigger = yes
+	}
+}
+
+abu_has_affordable_upgrade_in_capital_county_trigger = {
+	any_directly_owned_province = {
+		abu_province_in_capital_county_trigger = yes
+		abu_province_has_affordable_upgrade_trigger = yes
+	}
+}
+
+abu_has_affordable_upgrade_in_current_duchy_trigger = {
+	any_directly_owned_province = {
+		abu_province_in_current_duchy_trigger = yes
+		abu_province_has_affordable_upgrade_trigger = yes
+	}
+}
+
+abu_has_affordable_tier_cap_upgrade_in_domain_trigger = {
+	any_directly_owned_province = {
+		NOT = { has_ongoing_construction = yes }
+		OR = {
+			AND = {
+				abu_main_holding_can_afford_upgrade_trigger = yes
+				NOT = { abu_main_holding_at_effective_tier_cap_trigger = yes }
+			}
+			abu_economic_slot_building_can_afford_upgrade_below_tier_cap_trigger = yes
+			abu_military_slot_building_can_afford_upgrade_below_tier_cap_trigger = yes
+			abu_economic_slot_building_can_construct_trigger = yes
+			abu_military_slot_building_can_construct_trigger = yes
+			abu_duchy_capital_building_can_upgrade_trigger = yes
+		}
+	}
+}
+
+abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = {
+	NOT = { abu_slot_building_at_effective_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+	abu_can_afford_economic_slot_upgrade_trigger = { BUILDING = $BUILDING$ }
+}
+
+abu_can_afford_fortification_slot_upgrade_below_tier_cap_trigger = {
+	NOT = { abu_slot_building_at_effective_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+	abu_can_afford_fortification_slot_upgrade_trigger = { BUILDING = $BUILDING$ }
+}
+
+abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = {
+	NOT = { abu_slot_building_at_effective_tier_cap_trigger = { BUILDING = $BUILDING$ } }
+	abu_can_afford_recruitment_slot_upgrade_trigger = { BUILDING = $BUILDING$ }
+}
+
+abu_economic_slot_building_can_afford_upgrade_below_tier_cap_trigger = {
+	OR = {
+		AND = { has_building_or_higher = outposts_01 has_lesser_building_trigger = { COMPARE = outposts } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = outposts } }
+		AND = { has_building_or_higher = logging_camps_01 has_lesser_building_trigger = { COMPARE = logging_camps } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = logging_camps } }
+		AND = { has_building_or_higher = peat_quarries_01 has_lesser_building_trigger = { COMPARE = peat_quarries } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = peat_quarries } }
+		AND = { has_building_or_higher = plantations_01 has_lesser_building_trigger = { COMPARE = plantations } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = plantations } }
+		AND = { has_building_or_higher = quarries_01 has_lesser_building_trigger = { COMPARE = quarries } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = quarries } }
+		AND = { has_building_or_higher = hunting_grounds_01 has_lesser_building_trigger = { COMPARE = hunting_grounds } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = hunting_grounds } }
+		AND = { has_building_or_higher = pastures_01 has_lesser_building_trigger = { COMPARE = pastures } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = pastures } }
+		AND = { has_building_or_higher = cereal_fields_01 has_lesser_building_trigger = { COMPARE = cereal_fields } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = cereal_fields } }
+		AND = { has_building_or_higher = hill_farms_01 has_lesser_building_trigger = { COMPARE = hill_farms } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = hill_farms } }
+		AND = { has_building_or_higher = elephant_pens_01 has_lesser_building_trigger = { COMPARE = elephant_pens } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = elephant_pens } }
+		AND = { has_building_or_higher = common_tradeport_01 has_lesser_building_trigger = { COMPARE = common_tradeport } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = common_tradeport } }
+		AND = { has_building_or_higher = hospices_01 has_lesser_building_trigger = { COMPARE = hospices } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = hospices } }
+		AND = { has_building_or_higher = qanats_01 has_lesser_building_trigger = { COMPARE = qanats } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = qanats } }
+		AND = { has_building_or_higher = murex_farm_01 has_lesser_building_trigger = { COMPARE = murex_farm } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = murex_farm } }
+		AND = { has_building_or_higher = orchards_01 has_lesser_building_trigger = { COMPARE = orchards } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = orchards } }
+		AND = { has_building_or_higher = farm_estates_01 has_lesser_building_trigger = { COMPARE = farm_estates } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = farm_estates } }
+		AND = { has_building_or_higher = caravanserai_01 has_lesser_building_trigger = { COMPARE = caravanserai } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = caravanserai } }
+		AND = { has_building_or_higher = windmills_01 has_lesser_building_trigger = { COMPARE = windmills } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = windmills } }
+		AND = { has_building_or_higher = watermills_01 has_lesser_building_trigger = { COMPARE = watermills } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = watermills } }
+		AND = { has_building_or_higher = workshops_01 has_lesser_building_trigger = { COMPARE = workshops } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = workshops } }
+		AND = { has_building_or_higher = waterworks_01 has_lesser_building_trigger = { COMPARE = waterworks } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = waterworks } }
+		AND = { has_building_or_higher = paddy_fields_01 has_lesser_building_trigger = { COMPARE = paddy_fields } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = paddy_fields } }
+		AND = { has_building_or_higher = wind_furnace_01 has_lesser_building_trigger = { COMPARE = wind_furnace } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = wind_furnace } }
+		AND = { has_building_or_higher = smiths_01 has_lesser_building_trigger = { COMPARE = smiths } abu_can_afford_economic_slot_upgrade_below_tier_cap_trigger = { BUILDING = smiths } }
+	}
+}
+
+abu_military_slot_building_can_afford_upgrade_below_tier_cap_trigger = {
+	OR = {
+		AND = { has_building_or_higher = hill_forts_01 has_lesser_building_trigger = { COMPARE = hill_forts } abu_can_afford_fortification_slot_upgrade_below_tier_cap_trigger = { BUILDING = hill_forts } }
+		AND = { has_building_or_higher = ramparts_01 has_lesser_building_trigger = { COMPARE = ramparts } abu_can_afford_fortification_slot_upgrade_below_tier_cap_trigger = { BUILDING = ramparts } }
+		AND = { has_building_or_higher = curtain_walls_01 has_lesser_building_trigger = { COMPARE = curtain_walls } abu_can_afford_fortification_slot_upgrade_below_tier_cap_trigger = { BUILDING = curtain_walls } }
+		AND = { has_building_or_higher = watchtowers_01 has_lesser_building_trigger = { COMPARE = watchtowers } abu_can_afford_fortification_slot_upgrade_below_tier_cap_trigger = { BUILDING = watchtowers } }
+		AND = { has_building_or_higher = military_camps_01 has_lesser_building_trigger = { COMPARE = military_camps } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = military_camps } }
+		AND = { has_building_or_higher = horse_pastures_01 has_lesser_building_trigger = { COMPARE = horse_pastures } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = horse_pastures } }
+		AND = { has_building_or_higher = hillside_grazing_01 has_lesser_building_trigger = { COMPARE = hillside_grazing } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = hillside_grazing } }
+		AND = { has_building_or_higher = warrior_lodges_01 has_lesser_building_trigger = { COMPARE = warrior_lodges } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = warrior_lodges } }
+		AND = { has_building_or_higher = barracks_01 has_lesser_building_trigger = { COMPARE = barracks } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = barracks } }
+		AND = { has_building_or_higher = camel_farms_01 has_lesser_building_trigger = { COMPARE = camel_farms } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = camel_farms } }
+		AND = { has_building_or_higher = regimental_grounds_01 has_lesser_building_trigger = { COMPARE = regimental_grounds } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = regimental_grounds } }
+		AND = { has_building_or_higher = stables_01 has_lesser_building_trigger = { COMPARE = stables } abu_can_afford_recruitment_slot_upgrade_below_tier_cap_trigger = { BUILDING = stables } }
+	}
+}
+
+abu_passive_auto_upgrade_enabled_trigger = {
+	has_variable = abu_passive_auto_upgrade
+	var:abu_passive_auto_upgrade = 1
+}
+
+abu_passive_auto_upgrade_character_trigger = {
+	is_ai = no
+	is_playable_character = yes
+	is_landed = yes
+	abu_passive_auto_upgrade_enabled_trigger = yes
+}
+
+abu_culture_gained_building_innovation_trigger = {
+	OR = {
+		AND = {
+			NOT = { has_variable = abu_tracked_innovation_count }
+			var:abu_building_innovation_count > 0
+		}
+		AND = {
+			has_variable = abu_tracked_innovation_count
+			var:abu_building_innovation_count > var:abu_tracked_innovation_count
+		}
+	}
+}
+
+abu_should_passive_auto_upgrade_trigger = {
+	abu_passive_auto_upgrade_character_trigger = yes
+	abu_culture_gained_building_innovation_trigger = yes
+	abu_has_affordable_upgrade_in_domain_trigger = yes
 }
